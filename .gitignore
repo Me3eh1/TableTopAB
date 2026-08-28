@@ -1,0 +1,27 @@
+# Генерируемые движком папки
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/*
+!Build/**/*.ico
+
+# Бинарники плагинов
+Plugins/*/Binaries/
+Plugins/*/Intermediate/
+
+# Visual Studio / IDE
+.vs/
+.idea/
+*.sln
+*.slnx
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+*.vsconfig
+
+# Системное
+.DS_Store
+Thumbs.db
