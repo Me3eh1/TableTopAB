@@ -220,6 +220,12 @@ ATableTopCharacter* UTableTopTuningMenuWidget::ResolvePawn() const
 
 void UTableTopTuningMenuWidget::BuildPanel()
 {
+	// NativeConstruct перезапускается при каждом повторном AddToViewport — строим один раз
+	if (WidgetTree->RootWidget)
+	{
+		return;
+	}
+
 	UCanvasPanel* Canvas = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass());
 	WidgetTree->RootWidget = Canvas;
 
@@ -405,21 +411,23 @@ void UTableTopTuningMenuWidget::Toggle()
 	AddToViewport(10);
 	if (APlayerController* PC = GetOwningPlayer())
 	{
-		FInputModeGameAndUI Mode;
+		// UIOnly: весь ввод мыши гарантированно уходит в UI — перетаскивание слайдеров
+		// в PIE в режиме Game+UI не работает (захват мыши вьюпортом перебивает drag).
+		// Цена: игровой ввод приостановлен, пока меню открыто; закрытие — H/Escape ниже.
+		FInputModeUIOnly Mode;
 		Mode.SetWidgetToFocus(TakeWidget());
-		Mode.SetHideCursorDuringCapture(false);
 		PC->SetInputMode(Mode);
 		PC->bShowMouseCursor = true;
-
-		// Проектный дефолт CapturePermanently_IncludingInitialMouseDown отдаёт клики
-		// вьюпорту игры — без явного NoCapture UI не нажимается мышью
-		if (UGameViewportClient* Viewport = GetWorld() ? GetWorld()->GetGameViewport() : nullptr)
-		{
-			SavedCaptureMode = Viewport->GetMouseCaptureMode();
-			SavedLockMode = Viewport->GetMouseLockMode();
-			Viewport->SetMouseCaptureMode(EMouseCaptureMode::NoCapture);
-			Viewport->SetMouseLockMode(EMouseLockMode::DoNotLock);
-		}
 	}
 	SyncAllRows();
+}
+
+FReply UTableTopTuningMenuWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	if (InKeyEvent.GetKey() == EKeys::H || InKeyEvent.GetKey() == EKeys::Escape)
+	{
+		Toggle();
+		return FReply::Handled();
+	}
+	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
 }

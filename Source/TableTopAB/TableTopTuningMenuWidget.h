@@ -47,6 +47,7 @@ class TABLETOPAB_API UTableTopTuningMenuWidget : public UUserWidget
 
 public:
 	virtual void NativeConstruct() override;
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 
 	/** Показать/скрыть с переключением режима ввода и курсора. */
 	void Toggle();
