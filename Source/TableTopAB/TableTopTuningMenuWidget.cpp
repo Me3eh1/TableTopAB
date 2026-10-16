@@ -94,7 +94,7 @@ void UTuningSliderRow::SyncFromParam()
 {
 	const TArray<UTableTopTuningMenuWidget::FTuningParam>& Params = UTableTopTuningMenuWidget::GetParams();
 	ATableTopCharacter* Pawn = Menu.IsValid() ? Menu->ResolvePawn() : nullptr;
-	if (!Params.IsValidIndex(ParamIndex) || !Pawn || !Slider.IsValid() || !ValueText.IsValid())
+	if (!Params.IsValidIndex(ParamIndex) || !Pawn || !Slider || !ValueText)
 	{
 		return;
 	}
@@ -102,8 +102,25 @@ void UTuningSliderRow::SyncFromParam()
 	bSynching = true;
 	const float Current = Params[ParamIndex].Get(Pawn);
 	Slider->SetValue(Current);
-	ValueText->SetText(FText::FromString(FString::Printf(TEXT("%g"), Current)));
+	LastShownValue = FString::Printf(TEXT("%g"), Current);
+	ValueText->SetText(FText::FromString(LastShownValue));
 	bSynching = false;
+}
+
+void UTuningSliderRow::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	// Цифра следует за ползунком каждый кадр — независимо от доставки событий
+	if (Slider && ValueText)
+	{
+		const FString Shown = FString::Printf(TEXT("%g"), Slider->GetValue());
+		if (!Shown.Equals(LastShownValue))
+		{
+			LastShownValue = Shown;
+			ValueText->SetText(FText::FromString(Shown));
+		}
+	}
 }
 
 void UTuningSliderRow::HandleSliderChanged(float Value)
@@ -113,10 +130,6 @@ void UTuningSliderRow::HandleSliderChanged(float Value)
 		return;
 	}
 	Menu->ApplyParam(ParamIndex, Value);
-	if (ValueText.IsValid())
-	{
-		ValueText->SetText(FText::FromString(FString::Printf(TEXT("%g"), Value)));
-	}
 }
 
 // ===== Меню =====

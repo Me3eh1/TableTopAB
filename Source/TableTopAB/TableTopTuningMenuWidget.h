@@ -23,6 +23,7 @@ class UTuningSliderRow : public UUserWidget
 public:
 	void InitRow(int32 InParamIndex, UTableTopTuningMenuWidget* InMenu);
 	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	/** Синхронизировать слайдер и подпись с текущим значением параметра. */
 	void SyncFromParam();
@@ -33,8 +34,15 @@ public:
 private:
 	int32 ParamIndex = INDEX_NONE;
 	TWeakObjectPtr<UTableTopTuningMenuWidget> Menu;
-	TWeakObjectPtr<USlider> Slider;
-	TWeakObjectPtr<UTextBlock> ValueText;
+
+	// Сильные ссылки (GC-safe), паттерн как у TableTopStaminaWidget
+	UPROPERTY(Transient)
+	TObjectPtr<USlider> Slider;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> ValueText;
+
+	FString LastShownValue;
 	bool bSynching = false;
 };
 
