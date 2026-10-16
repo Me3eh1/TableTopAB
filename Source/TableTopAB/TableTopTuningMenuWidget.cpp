@@ -40,6 +40,14 @@ void UTuningSliderRow::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	// Строим поддерево один раз: при повторном входе меню во вьюпорт NativeConstruct
+	// перезапускается, но Slate уже рендерит виджеты первой сборки — пересоздание
+	// оторвёт ссылки и тик от видимых слайдера/цифры
+	if (WidgetTree->RootWidget)
+	{
+		return;
+	}
+
 	const TArray<UTableTopTuningMenuWidget::FTuningParam>& Params = UTableTopTuningMenuWidget::GetParams();
 	if (!Params.IsValidIndex(ParamIndex))
 	{
@@ -130,6 +138,11 @@ void UTuningSliderRow::HandleSliderChanged(float Value)
 		return;
 	}
 	Menu->ApplyParam(ParamIndex, Value);
+	if (ValueText)
+	{
+		LastShownValue = FString::Printf(TEXT("%g"), Value);
+		ValueText->SetText(FText::FromString(LastShownValue));
+	}
 }
 
 // ===== Меню =====
