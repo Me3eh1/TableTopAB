@@ -113,6 +113,14 @@
 		{
 			"Name": "SlateInspectorToolset",
 			"Enabled": true
+		},
+		{
+			"Name": "VibeUE",
+			"Enabled": true
+		},
+		{
+			"Name": "MVVMToolset",
+			"Enabled": true
 		}
 	]
 }
