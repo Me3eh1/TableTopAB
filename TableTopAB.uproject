@@ -35,10 +35,6 @@
 			"Enabled": true
 		},
 		{
-			"Name": "AllToolsets",
-			"Enabled": true
-		},
-		{
 			"Name": "AutomationTestToolset",
 			"Enabled": true
 		},
@@ -48,10 +44,6 @@
 		},
 		{
 			"Name": "EditorToolset",
-			"Enabled": true
-		},
-		{
-			"Name": "GameFeaturesToolset",
 			"Enabled": true
 		},
 		{
