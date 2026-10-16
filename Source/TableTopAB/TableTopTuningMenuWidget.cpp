@@ -14,6 +14,7 @@
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
+#include "Engine/GameViewportClient.h"
 #include "GameFramework/PlayerController.h"
 #include "Styling/CoreStyle.h"
 
@@ -123,6 +124,7 @@ void UTuningSliderRow::HandleSliderChanged(float Value)
 void UTableTopTuningMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	bIsFocusable = true;
 	BuildPanel();
 }
 
@@ -239,7 +241,7 @@ void UTableTopTuningMenuWidget::BuildPanel()
 
 	// Заголовок
 	UTextBlock* Title = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
-	Title->SetText(FText::FromString(TEXT("CHERNOBOG — TUNING (F1)")));
+	Title->SetText(FText::FromString(TEXT("CHERNOBOG — TUNING (H)")));
 	Title->SetFont(TuningMenu::HeaderFont());
 	Title->SetColorAndOpacity(FSlateColor(FLinearColor(1.f, 0.85f, 0.3f, 1.f)));
 	if (UVerticalBoxSlot* SlotObj = Content->AddChildToVerticalBox(Title))
@@ -275,7 +277,7 @@ void UTableTopTuningMenuWidget::BuildPanel()
 	{
 		DebugHudButtonText = BtnText;
 	}
-	{ UButton* B = MakeButton(Buttons, TEXT("Закрыть (F1)"));
+	{ UButton* B = MakeButton(Buttons, TEXT("Закрыть (H)"));
 	if (B) { B->OnClicked.AddDynamic(this, &UTableTopTuningMenuWidget::HandleCloseClicked); } }
 
 	// Строки параметров по секциям
@@ -391,6 +393,12 @@ void UTableTopTuningMenuWidget::Toggle()
 			PC->SetInputMode(FInputModeGameOnly());
 			PC->bShowMouseCursor = false;
 		}
+		// Возврат проектных режимов захвата/блокировки мыши (DefaultInput.ini)
+		if (UGameViewportClient* Viewport = GetWorld() ? GetWorld()->GetGameViewport() : nullptr)
+		{
+			Viewport->SetMouseCaptureMode(SavedCaptureMode);
+			Viewport->SetMouseLockMode(SavedLockMode);
+		}
 		return;
 	}
 
@@ -398,9 +406,20 @@ void UTableTopTuningMenuWidget::Toggle()
 	if (APlayerController* PC = GetOwningPlayer())
 	{
 		FInputModeGameAndUI Mode;
+		Mode.SetWidgetToFocus(TakeWidget());
 		Mode.SetHideCursorDuringCapture(false);
 		PC->SetInputMode(Mode);
 		PC->bShowMouseCursor = true;
+
+		// Проектный дефолт CapturePermanently_IncludingInitialMouseDown отдаёт клики
+		// вьюпорту игры — без явного NoCapture UI не нажимается мышью
+		if (UGameViewportClient* Viewport = GetWorld() ? GetWorld()->GetGameViewport() : nullptr)
+		{
+			SavedCaptureMode = Viewport->GetMouseCaptureMode();
+			SavedLockMode = Viewport->GetMouseLockMode();
+			Viewport->SetMouseCaptureMode(EMouseCaptureMode::NoCapture);
+			Viewport->SetMouseLockMode(EMouseLockMode::DoNotLock);
+		}
 	}
 	SyncAllRows();
 }

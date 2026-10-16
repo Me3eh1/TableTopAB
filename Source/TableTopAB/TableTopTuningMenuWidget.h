@@ -84,4 +84,8 @@ private:
 
 	TArray<TWeakObjectPtr<UTuningSliderRow>> Rows;
 	TWeakObjectPtr<UTextBlock> DebugHudButtonText;
+
+	/** Проектные режимы захвата/блокировки мыши — выключаются, пока меню открыто. */
+	EMouseCaptureMode SavedCaptureMode = EMouseCaptureMode::CapturePermanently_IncludingInitialMouseDown;
+	EMouseLockMode SavedLockMode = EMouseLockMode::LockOnCapture;
 };
