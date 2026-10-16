@@ -186,6 +186,16 @@ void ATableTopCharacter::Input_Attack()
 void ATableTopCharacter::Input_ToggleTuningMenu()
 {
 #if !UE_BUILD_SHIPPING
+	// Менять режим ввода внутри обработки события ввода нельзя (реентерантность Slate —
+	// в PIE ввод «проглатывается» и управление умирает) — откладываем на следующий тик
+	GetWorldTimerManager().SetTimerForNextTick(
+		FTimerDelegate::CreateUObject(this, &ATableTopCharacter::ToggleTuningMenu));
+#endif
+}
+
+void ATableTopCharacter::ToggleTuningMenu()
+{
+#if !UE_BUILD_SHIPPING
 	if (!TuningMenu)
 	{
 		TuningMenu = CreateWidget<UTableTopTuningMenuWidget>(GetWorld(), UTableTopTuningMenuWidget::StaticClass());

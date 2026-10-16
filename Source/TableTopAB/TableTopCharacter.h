@@ -168,6 +168,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "TableTop|Movement")
 	void RefreshTunedMovement() { UpdateWalkSpeed(); }
 
+	/** Открыть/закрыть крутилку параметров (QA/автотесты; со ввода вызывается отложенно). */
+	UFUNCTION(BlueprintCallable, Category = "TableTop|Debug")
+	void ToggleTuningMenu();
+
+	UFUNCTION(BlueprintPure, Category = "TableTop|Debug")
+	UTableTopTuningMenuWidget* GetTuningMenu() const { return TuningMenu; }
+
 private:
 	// ===== Обработка ввода =====
 	void Input_MoveForward(const FInputActionValue& Value);

@@ -52,6 +52,7 @@ public:
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 
 	/** Показать/скрыть с переключением режима ввода и курсора. */
+	UFUNCTION(BlueprintCallable, Category = "TableTop|Tuning")
 	void Toggle();
 
 	void ApplyParam(int32 ParamIndex, float NewValue);
