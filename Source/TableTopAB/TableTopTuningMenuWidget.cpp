@@ -121,10 +121,18 @@ void UTuningSliderRow::HandleSliderChanged(float Value)
 
 // ===== Меню =====
 
+UTableTopTuningMenuWidget::UTableTopTuningMenuWidget(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	// Должно быть true ДО создания Slate-виджета (TakeWidget): SObjectWidget отвечает
+	// SupportsKeyboardFocus при создании, и UIOnly без фокусируемого виджета
+	// переводит вьюпорт в IgnoreInput — игровое окно «зависает»
+	bIsFocusable = true;
+}
+
 void UTableTopTuningMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	bIsFocusable = true;
 	BuildPanel();
 }
 

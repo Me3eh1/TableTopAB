@@ -46,6 +46,8 @@ class TABLETOPAB_API UTableTopTuningMenuWidget : public UUserWidget
 	friend class UTuningSliderRow;
 
 public:
+	UTableTopTuningMenuWidget(const FObjectInitializer& ObjectInitializer);
+
 	virtual void NativeConstruct() override;
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 
