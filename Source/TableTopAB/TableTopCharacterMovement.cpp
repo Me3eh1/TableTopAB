@@ -10,10 +10,10 @@ UTableTopCharacterMovement::UTableTopCharacterMovement()
 	MaxAcceleration = 8000.f;               // быстрый набор скорости при смене направления
 	BrakingDecelerationWalking = 20000.f;   // практически мгновенная остановка (§3.1)
 	GroundFriction = 8.f;
-	JumpZVelocity = 700.f;                  // 7 м/с
+	JumpZVelocity = 650.f;                  // стартово 7 м/с по доке §4; снижено по итогам плейтеста
 	AirControl = 0.35f;                     // управление в воздухе (настраиваемое)
 	BrakingDecelerationFalling = 0.f;
-	GravityScale = 1.25f;                   // высота прыжка ~2 м при импульсе 7 м/с
+	GravityScale = 1.55f;                   // высота прыжка ~1.4 м, собранный воздух
 	bNotifyApex = false;
 }
 
