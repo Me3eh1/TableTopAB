@@ -38,6 +38,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "TableTop|Stamina")
 	float GetStaminaPercent() const { return MaxStamina > 0.f ? Stamina / MaxStamina : 0.f; }
 
+	/** Смена максимума с клампом текущего запаса (крутилка параметров). */
+	UFUNCTION(BlueprintCallable, Category = "TableTop|Stamina")
+	void SetMaxStamina(float NewMax);
+
 	UPROPERTY(BlueprintAssignable, Category = "TableTop|Stamina")
 	FOnStaminaChanged OnStaminaChanged;
 

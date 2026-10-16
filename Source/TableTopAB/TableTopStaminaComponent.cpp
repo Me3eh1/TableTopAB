@@ -23,6 +23,13 @@ void UTableTopStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	}
 }
 
+void UTableTopStaminaComponent::SetMaxStamina(float NewMax)
+{
+	MaxStamina = FMath::Max(1.f, NewMax);
+	Stamina = FMath::Min(Stamina, MaxStamina);
+	OnStaminaChanged.Broadcast(Stamina, 0.f);
+}
+
 bool UTableTopStaminaComponent::TryConsume(float Amount)
 {
 	if (Amount <= 0.f)

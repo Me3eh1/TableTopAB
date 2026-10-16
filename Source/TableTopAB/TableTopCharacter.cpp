@@ -12,6 +12,7 @@
 #include "TableTopCharacterMovement.h"
 #include "TableTopStaminaComponent.h"
 #include "TableTopStaminaWidget.h"
+#include "TableTopTuningMenuWidget.h"
 
 ATableTopCharacter::ATableTopCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UTableTopCharacterMovement>(ACharacter::CharacterMovementComponentName))
@@ -88,6 +89,9 @@ void ATableTopCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		Input->BindAction(GuardAction, ETriggerEvent::Started, this, &ATableTopCharacter::Input_GuardStarted);
 		Input->BindAction(GuardAction, ETriggerEvent::Completed, this, &ATableTopCharacter::Input_GuardCompleted);
 		Input->BindAction(AttackAction, ETriggerEvent::Started, this, &ATableTopCharacter::Input_Attack);
+#if !UE_BUILD_SHIPPING
+		Input->BindAction(TuningMenuAction, ETriggerEvent::Started, this, &ATableTopCharacter::Input_ToggleTuningMenu);
+#endif
 	}
 }
 
@@ -177,6 +181,20 @@ void ATableTopCharacter::Input_Attack()
 		// Заглушка: боевая система подключит позже (дока §8)
 		UE_LOG(LogTemp, Log, TEXT("[Chernobog] Attack stub (combat system TBD)"));
 	}
+}
+
+void ATableTopCharacter::Input_ToggleTuningMenu()
+{
+#if !UE_BUILD_SHIPPING
+	if (!TuningMenu)
+	{
+		TuningMenu = CreateWidget<UTableTopTuningMenuWidget>(GetWorld(), UTableTopTuningMenuWidget::StaticClass());
+	}
+	if (TuningMenu)
+	{
+		TuningMenu->Toggle();
+	}
+#endif
 }
 
 // ===== Отладочные триггеры =====

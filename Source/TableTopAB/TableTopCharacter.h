@@ -15,6 +15,7 @@ class UCameraComponent;
 class UTableTopCharacterMovement;
 class UTableTopStaminaComponent;
 class UTableTopStaminaWidget;
+class UTableTopTuningMenuWidget;
 
 /** Атака из защитной стойки — особая атака riposte (дока §3.2); логику подключит боевая система. */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRiposteTriggered);
@@ -110,6 +111,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "TableTop|Input")
 	TObjectPtr<UInputAction> AttackAction;			// Digital: ЛКМ (заглушка под riposte)
 
+	/** Крутилка параметров (F1); активна только в не-Shipping билдах. */
+	UPROPERTY(EditDefaultsOnly, Category = "TableTop|Input")
+	TObjectPtr<UInputAction> TuningMenuAction;
+
 	// ===== Параметры (дока §4; настраиваются в BP без изменения логики) =====
 
 	/** Базовая скорость ходьбы, см/с (дока: 700). */
@@ -159,6 +164,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "TableTop|Dodge")
 	float GetDodgeStaminaCost() const { return DodgeStaminaCost; }
 
+	/** Пересчитать производные параметры (скорость с учётом стойки) после внешней правки. */
+	UFUNCTION(BlueprintCallable, Category = "TableTop|Movement")
+	void RefreshTunedMovement() { UpdateWalkSpeed(); }
+
 private:
 	// ===== Обработка ввода =====
 	void Input_MoveForward(const FInputActionValue& Value);
@@ -170,6 +179,7 @@ private:
 	void Input_GuardStarted();
 	void Input_GuardCompleted();
 	void Input_Attack();
+	void Input_ToggleTuningMenu();
 
 	// ===== Состояния =====
 	void SetVerticalState(EVerticalMoveState NewState);
@@ -206,4 +216,7 @@ private:
 
 	UPROPERTY(Transient)
 	TObjectPtr<UTableTopStaminaWidget> StaminaHUD;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTableTopTuningMenuWidget> TuningMenu;
 };
