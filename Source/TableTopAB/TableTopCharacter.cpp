@@ -11,6 +11,7 @@
 
 #include "TableTopCharacterMovement.h"
 #include "TableTopStaminaComponent.h"
+#include "TableTopStaminaWidget.h"
 
 ATableTopCharacter::ATableTopCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UTableTopCharacterMovement>(ACharacter::CharacterMovementComponentName))
@@ -34,6 +35,15 @@ void ATableTopCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	UpdateWalkSpeed();
+
+	if (IsLocallyControlled() && StaminaHUDClass)
+	{
+		StaminaHUD = CreateWidget<UTableTopStaminaWidget>(GetWorld(), StaminaHUDClass);
+		if (StaminaHUD)
+		{
+			StaminaHUD->AddToViewport();
+		}
+	}
 }
 
 void ATableTopCharacter::Tick(float DeltaTime)
@@ -87,13 +97,10 @@ void ATableTopCharacter::Input_MoveForward(const FInputActionValue& Value)
 {
 	if (IsStunned())
 	{
-		LastMoveInput.Y = 0.f;
 		return;
 	}
 
 	const float Axis = Value.Get<float>();
-	LastMoveInput.Y = Axis;
-
 	const FRotator YawRotation(0.f, GetControlRotation().Yaw, 0.f);
 	AddMovementInput(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X), Axis);
 }
@@ -102,13 +109,10 @@ void ATableTopCharacter::Input_MoveRight(const FInputActionValue& Value)
 {
 	if (IsStunned())
 	{
-		LastMoveInput.X = 0.f;
 		return;
 	}
 
 	const float Axis = Value.Get<float>();
-	LastMoveInput.X = Axis;
-
 	const FRotator YawRotation(0.f, GetControlRotation().Yaw, 0.f);
 	AddMovementInput(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y), Axis);
 }
@@ -229,19 +233,12 @@ void ATableTopCharacter::TryStartDodge()
 		return;
 	}
 
-	// Направление: ввод движения в момент активации, иначе направление взгляда (§3.3)
+	// Направление: живой ввод движения в момент активации (то, что потребил CMC в прошлом тике),
+	// иначе направление взгляда (§3.3). Кэш по ETriggerEvent не годится: на отпускании клавиши
+	// приходит только Completed, и закэшированное значение зависало бы навсегда.
 	FVector Direction;
-	if (!LastMoveInput.IsNearlyZero())
-	{
-		const FRotator YawRotation(0.f, GetControlRotation().Yaw, 0.f);
-		const FVector Forward = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		const FVector Right = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		Direction = (Forward * LastMoveInput.Y + Right * LastMoveInput.X).GetSafeNormal();
-	}
-	else
-	{
-		Direction = GetActorForwardVector();
-	}
+	const FVector InputVector = GetCharacterMovement()->GetLastInputVector().GetSafeNormal2D();
+	Direction = !InputVector.IsNearlyZero() ? InputVector : GetActorForwardVector();
 
 	if (Movement->StartDodge(Direction, ComputeDodgeDistanceCoefficient(Direction)))
 	{

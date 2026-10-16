@@ -14,6 +14,7 @@ class UInputMappingContext;
 class UCameraComponent;
 class UTableTopCharacterMovement;
 class UTableTopStaminaComponent;
+class UTableTopStaminaWidget;
 
 /** Атака из защитной стойки — особая атака riposte (дока §3.2); логику подключит боевая система. */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRiposteTriggered);
@@ -151,6 +152,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "TableTop|Debug")
 	bool bShowDebugHud = true;
 
+	/** HUD выносливости: виджет создаётся локально управляемому персонажу. */
+	UPROPERTY(EditDefaultsOnly, Category = "TableTop|HUD")
+	TSubclassOf<UTableTopStaminaWidget> StaminaHUDClass;
+
+	UFUNCTION(BlueprintPure, Category = "TableTop|Dodge")
+	float GetDodgeStaminaCost() const { return DodgeStaminaCost; }
+
 private:
 	// ===== Обработка ввода =====
 	void Input_MoveForward(const FInputActionValue& Value);
@@ -189,13 +197,13 @@ private:
 	bool bGuardHeld = false;
 	bool bGuardActive = false;
 
-	/** Последний ввод движения (X — вправо, Y — вперёд); уклонение берёт направление из него (§3.3). */
-	FVector2D LastMoveInput = FVector2D::ZeroVector;
-
 	int32 ConsecutiveDodgeCount = 0;
 	float LastDodgeTime = -1000.f;
 	bool bAirDodgeAvailable = true;
 
 	FTimerHandle LandingTimerHandle;
 	FTimerHandle StunTimerHandle;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTableTopStaminaWidget> StaminaHUD;
 };
