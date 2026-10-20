@@ -108,7 +108,7 @@
 		},
 		{
 			"Name": "VibeUE",
-			"Enabled": true
+			"Enabled": false
 		},
 		{
 			"Name": "MVVMToolset",
