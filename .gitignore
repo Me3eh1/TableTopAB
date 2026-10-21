@@ -1,16 +1,36 @@
-# Генерируемые движком папки
+# === Генерируемые движком папки ===
 Binaries/
 DerivedDataCache/
 Intermediate/
 Saved/
+
+# Выходы упаковки игры
+Packaged/
+Repackaged/
+
+# === Build ===
 Build/*
+!Build/*/
+Build/*/**
+!Build/*/PakBlacklist*.txt
 !Build/**/*.ico
 
-# Бинарники плагинов
+# === Плагины ===
 Plugins/*/Binaries/
 Plugins/*/Intermediate/
+Plugins/*/Saved/
 
-# Visual Studio / IDE
+# === Данные запечённого освещения (генерируются рядом с картами) ===
+*_BuiltData.uemap
+*_BuiltData.uasset
+*-BuiltData.uemap
+*-BuiltData.uasset
+
+# === Локальный контент редактора (персональный, не для репозитория) ===
+Content/Collections/
+Content/Developers/
+
+# === Visual Studio / Rider / VS Code ===
 .vs/
 .idea/
 *.sln
@@ -21,7 +41,11 @@ Plugins/*/Intermediate/
 *.VC.db
 *.VC.opendb
 *.vsconfig
+*.code-workspace
+*.user
+*.DotSettings.user
 
-# Системное
+# === Mac / Windows системное ===
 .DS_Store
 Thumbs.db
+Desktop.ini
